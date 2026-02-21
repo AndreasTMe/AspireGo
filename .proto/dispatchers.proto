@@ -1,0 +1,86 @@
+syntax = "proto3";
+
+package dispatchers;
+
+option csharp_namespace = "Orchestrator.Dispatchers";
+option go_package = "main/.gen/proto";
+
+service TaskDispatcher {
+  rpc Connect(stream ClientMessage) returns (stream ServerMessage);
+}
+
+// =======================
+// Client => Server
+// =======================
+
+message ClientMessage {
+  oneof payload {
+    WorkerAck ack = 1;
+    CapacityUpdate capacity = 2;
+    TaskCompleted completed = 3;
+    TaskFailed failed = 4;
+    TaskHeartbeat heartbeat = 5;
+  }
+}
+
+message WorkerAck {
+  int32 max_normal = 1;
+  int32 max_urgent = 2;
+}
+
+message CapacityUpdate {
+  int32 normal_credit = 1;
+  int32 urgent_credit = 2;
+}
+
+message TaskCompleted {
+  string task_id = 1;
+}
+
+message TaskFailed {
+  string task_id = 1;
+  string reason = 2;
+  bool retryable = 3;
+}
+
+message TaskHeartbeat {
+  string task_id = 1;
+}
+
+// =======================
+// Server => Client
+// =======================
+
+message ServerMessage {
+  oneof payload {
+    TaskAssignment task = 1;
+    // ControlCommand command = 2;
+  }
+}
+
+message TaskAssignment {
+  string task_id = 1;
+  TaskType type = 2;
+  bytes payload = 3;
+  TaskPriority priority = 4;
+  int64 lease_expiration_unix_ms = 5;
+}
+
+enum TaskType {
+  TASK_TYPE_UNSPECIFIED = 0;
+}
+
+enum TaskPriority {
+  TASK_PRIORITY_UNSPECIFIED = 0;
+  TASK_PRIORITY_NORMAL = 1;
+  TASK_PRIORITY_URGENT = 2;
+}
+
+// message ControlCommand {
+//   enum Type {
+//     DRAIN = 0;
+//     RESUME = 1;
+//     SHUTDOWN = 2;
+//   }
+//   Type type = 1;
+// }

@@ -1,0 +1,9 @@
+﻿.aspire
+bin
+obj
+.gen
+
+appsettings.json
+appsettings.*.json
+
+*.DotSettings.user

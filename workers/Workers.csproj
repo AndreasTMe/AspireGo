@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <OutputType>Library</OutputType>
+        <IsPackable>false</IsPackable>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <NoWarn>$(NoWarn);1591</NoWarn>
+
+        <GoExe>go</GoExe>
+        <GoProjectDir>$(MSBuildProjectDirectory)</GoProjectDir>
+        <GoOutDir>$(GoProjectDir)\bin\$(Configuration)\</GoOutDir>
+        <GoMainPackage>.</GoMainPackage>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="**\*.go" Exclude="bin\**;obj\**"/>
+        <None Include="go.mod"/>
+        <None Include="go.sum" Condition="Exists('go.sum')"/>
+        <None Include="**\*.json" Exclude="bin\**;obj\**"/>
+        <None Include="**\*.yaml;**\*.yml;**\*.md" Exclude="bin\**;obj\**"/>
+    </ItemGroup>
+
+    <Target Name="GoBuild" AfterTargets="Build">
+        <Message Importance="high" Text="Go build: $(GoMainPackage) (Config=$(Configuration))"/>
+        <MakeDir Directories="$(GoOutDir)"/>
+        <Exec
+                WorkingDirectory="$(GoProjectDir)"
+                Command="&quot;$(GoExe)&quot; build -o &quot;$(GoOutDir)workers.exe&quot; &quot;$(GoMainPackage)&quot;"/>
+    </Target>
+
+    <Target Name="GoClean" AfterTargets="Clean">
+        <RemoveDir Directories="$(GoOutDir)"/>
+    </Target>
+
+    <Target Name="GoTest">
+        <Message Importance="high" Text="Go test: ./..."/>
+        <Exec WorkingDirectory="$(GoProjectDir)" Command="&quot;$(GoExe)&quot; test ./..."/>
+    </Target>
+
+    <Target Name="GoFmt">
+        <Message Importance="high" Text="Go fmt: ./..."/>
+        <Exec WorkingDirectory="$(GoProjectDir)" Command="&quot;$(GoExe)&quot; fmt ./..."/>
+    </Target>
+
+</Project>

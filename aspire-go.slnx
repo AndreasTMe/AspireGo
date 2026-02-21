@@ -1,0 +1,13 @@
+<Solution>
+    <Folder Name="/.proto/">
+        <File Path=".proto/dispatchers.proto" />
+    </Folder>
+    <Folder Name="/.scripts/">
+        <File Path=".scripts/build-all.ps1" />
+        <File Path=".scripts/build-proto.ps1" />
+        <File Path=".scripts/run.ps1" />
+    </Folder>
+    <Project Path="aspire-host/AspireHost.csproj" />
+    <Project Path="orchestrator/Orchestrator.csproj" />
+    <Project Path="workers/Workers.csproj" />
+</Solution>
